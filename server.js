@@ -37,21 +37,17 @@ app.use(cors({
     credentials: true
 }));
 
-// Root route — simple check endpoint to avoid "Cannot GET /"
-app.get('/', (req, res) => {
-    res.send('Internet Problem Solver API is running');
-});
+// Serve frontend static files from "public" folder
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Use API routes with version fallback
+// API routes with version fallback
 const apiVersion = process.env.API_VERSION || 'v1';
 app.use(`/api/${apiVersion}/problems`, problemRoutes);
 
-// (Optional) Serve frontend static files if deployed in same repo
-// Uncomment and adjust folder if you have frontend build output
-// app.use(express.static(path.join(__dirname, 'client', 'build')));
-// app.get('*', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
-// });
+// Fallback to serve index.html for any other GET request (SPA support)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
