@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>MUST Internet Problem Solver</title>
     <style>
+        /* Your existing CSS here (unchanged) */
         * {
             margin: 0;
             padding: 0;
@@ -377,7 +378,7 @@
                 <div class="card">
                     <h2>Recent Problems</h2>
                     <div class="form-group">
-                        <label for="statusFilter">Filter by Status</label>
+                        <label for="statusFilter">Filter by Status:</label>
                         <select id="statusFilter" class="form-control" aria-label="Filter problems by status">
                             <option value="">All</option>
                             <option value="Pending">Pending</option>
@@ -385,40 +386,49 @@
                             <option value="Resolved">Resolved</option>
                         </select>
                     </div>
-                    <div id="problemsList" class="problems-grid" aria-live="polite" aria-busy="false"></div>
                     <div id="loadingMessage" class="loading" hidden>Loading problems...</div>
                     <div id="errorMessage" class="message error" hidden>
-                        Failed to load problems. <button id="retryLoad">Retry</button>
+                        Failed to load problems.
+                        <button id="retryButton" aria-label="Retry loading problems">Retry</button>
                     </div>
+                    <div id="problemsList" class="problems-grid" aria-live="polite" aria-busy="false"></div>
                 </div>
             </section>
 
-            <!-- Report Problem Section -->
+            <!-- Problem Reporting Section -->
             <section id="problem" class="section" tabindex="-1">
                 <div class="card">
-                    <h2>Report a Problem</h2>
-                    <form id="problemForm" novalidate aria-describedby="formMessage" aria-live="assertive">
+                    <h2>Report an Internet Problem</h2>
+                    <form id="problemForm" aria-label="Internet problem report form" novalidate>
                         <div class="form-group">
-                            <label for="title">Problem Title</label>
-                            <input type="text" id="title" name="title" class="form-control" required aria-required="true" />
+                            <label for="titleInput">Title <span aria-hidden="true">*</span></label>
+                            <input type="text" id="titleInput" name="title" class="form-control" required aria-required="true" aria-describedby="titleError" />
+                            <div id="titleError" class="error-message" style="color: #721c24; display: none;">Title is required.</div>
                         </div>
+
                         <div class="form-group">
-                            <label for="description">Problem Description</label>
-                            <textarea id="description" name="description" class="form-control" required aria-required="true"></textarea>
+                            <label for="descriptionInput">Description <span aria-hidden="true">*</span></label>
+                            <textarea id="descriptionInput" name="description" class="form-control" required aria-required="true" aria-describedby="descriptionError"></textarea>
+                            <div id="descriptionError" class="error-message" style="color: #721c24; display: none;">Description is required.</div>
                         </div>
+
                         <div class="form-group">
-                            <label for="location">Location</label>
-                            <input type="text" id="location" name="location" class="form-control" required aria-required="true" />
+                            <label for="locationInput">Location <span aria-hidden="true">*</span></label>
+                            <input type="text" id="locationInput" name="location" class="form-control" required aria-required="true" aria-describedby="locationError" />
+                            <div id="locationError" class="error-message" style="color: #721c24; display: none;">Location is required.</div>
                         </div>
+
                         <div class="form-group">
-                            <label for="priority">Priority</label>
-                            <select id="priority" name="priority" class="form-control" required aria-required="true">
+                            <label for="priorityInput">Priority <span aria-hidden="true">*</span></label>
+                            <select id="priorityInput" name="priority" class="form-control" required aria-required="true" aria-describedby="priorityError">
                                 <option value="">Select priority</option>
                                 <option value="Low">Low</option>
                                 <option value="Medium">Medium</option>
                                 <option value="High">High</option>
                             </select>
+                            <div id="priorityError" class="error-message" style="color: #721c24; display: none;">Priority is required.</div>
                         </div>
+
                         <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
                         <div id="formMessage" role="alert" style="margin-top: 1rem;"></div>
                     </form>
@@ -428,75 +438,81 @@
             <!-- About Section -->
             <section id="about" class="section" tabindex="-1">
                 <div class="card">
-                    <h2>About This Application</h2>
-                    <p>This is an interactive tool developed for MUST students and staff to report and track internet connectivity issues on campus.</p>
-                    <p>Developed with modern web technologies for ease of use and responsiveness.</p>
+                    <h2>About MUST Internet Problem Solver</h2>
+                    <p>
+                        This application allows students and staff at Mbeya University of Science and Technology (MUST) to report and track internet connectivity issues. We aim to quickly identify problems and find effective solutions to improve connectivity on campus.
+                    </p>
+                    <p>
+                        Developed with modern web technologies for ease of use, accessibility, and responsiveness.
+                    </p>
                 </div>
             </section>
         </div>
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:3000/api/v1'; // Update as needed
+        const API_BASE = 'https://your-backend-api.example.com/api'; // <-- Change to your actual backend URL
 
-        // Navigation and section toggle
-        const navLinks = document.querySelectorAll('.nav-link');
-        const sections = document.querySelectorAll('.section');
+        // Navigation menu toggle for mobile
         const hamburger = document.querySelector('.hamburger');
         const navMenu = document.querySelector('.nav-menu');
-
-        function setActiveSection(sectionId) {
-            sections.forEach(sec => {
-                if (sec.id === sectionId) {
-                    sec.classList.add('active');
-                    sec.setAttribute('tabindex', '-1');
-                    sec.focus();
-                } else {
-                    sec.classList.remove('active');
-                    sec.removeAttribute('tabindex');
-                }
-            });
-
-            navLinks.forEach(link => {
-                if (link.dataset.section === sectionId) {
-                    link.classList.add('active');
-                    link.setAttribute('aria-current', 'page');
-                } else {
-                    link.classList.remove('active');
-                    link.removeAttribute('aria-current');
-                }
-            });
-
-            if (navMenu.classList.contains('active')) {
-                navMenu.classList.remove('active');
-            }
-        }
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', e => {
-                e.preventDefault();
-                const section = link.dataset.section;
-                setActiveSection(section);
-            });
-        });
+        const navLinks = document.querySelectorAll('.nav-link');
 
         hamburger.addEventListener('click', () => {
             navMenu.classList.toggle('active');
         });
 
-        hamburger.addEventListener('keydown', e => {
+        hamburger.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 navMenu.classList.toggle('active');
             }
         });
 
+        navLinks.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const sectionId = link.getAttribute('data-section');
+                showSection(sectionId);
+
+                // Update active link
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                // Close menu on mobile
+                if (navMenu.classList.contains('active')) {
+                    navMenu.classList.remove('active');
+                }
+            });
+        });
+
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(section => {
+                if (section.id === id) {
+                    section.classList.add('active');
+                    section.focus();
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+        }
+
+        // Escape HTML to prevent XSS
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
         // Load problems from backend
         const problemsList = document.getElementById('problemsList');
-        const statusFilter = document.getElementById('statusFilter');
         const loadingMessage = document.getElementById('loadingMessage');
         const errorMessage = document.getElementById('errorMessage');
-        const retryLoadBtn = document.getElementById('retryLoad');
+        const retryButton = document.getElementById('retryButton');
+        const statusFilter = document.getElementById('statusFilter');
 
         async function loadProblems() {
             problemsList.innerHTML = '';
@@ -504,8 +520,9 @@
             loadingMessage.hidden = false;
             problemsList.setAttribute('aria-busy', 'true');
             statusFilter.disabled = true;
+
             try {
-                const response = await fetch(${API_BASE}/problems);
+                const response = await fetch(`${API_BASE}/problems`);
                 if (!response.ok) throw new Error('Failed to fetch problems');
                 let problems = await response.json();
 
@@ -518,23 +535,21 @@
                     problemsList.innerHTML = '<p>No problems found.</p>';
                 } else {
                     problemsList.innerHTML = problems.map(problem => {
-                        const statusClass = 
+                        const statusClass =
                             problem.status === 'Pending' ? 'status-pending' :
                             problem.status === 'In Progress' ? 'status-in-progress' :
                             problem.status === 'Resolved' ? 'status-resolved' : '';
 
                         const createdDate = new Date(problem.created_at).toLocaleDateString();
 
-                        return 
-                            <div class="problem-card" role="article" aria-label="Problem titled ${problem.title}">
-                                <div class="problem-status ${statusClass}">${problem.status}</div>
-                                <div class="problem-title">${escapeHtml(problem.title)}</div>
-                                <div class="problem-description">${escapeHtml(problem.description)}</div>
-                                <div class="problem-meta">
-                                    Location: ${escapeHtml(problem.location)} | Priority: ${escapeHtml(problem.priority)} | Reported: ${createdDate}
-                                </div>
+                        return `<div class="problem-card" role="article" aria-label="Problem titled ${escapeHtml(problem.title)}">
+                            <div class="problem-status ${statusClass}">${escapeHtml(problem.status)}</div>
+                            <div class="problem-title">${escapeHtml(problem.title)}</div>
+                            <div class="problem-description">${escapeHtml(problem.description)}</div>
+                            <div class="problem-meta">
+                                Location: ${escapeHtml(problem.location)} | Priority: ${escapeHtml(problem.priority)} | Reported: ${createdDate}
                             </div>
-                        ;
+                        </div>`;
                     }).join('');
                 }
             } catch (error) {
@@ -547,85 +562,88 @@
             }
         }
 
-        // Escape HTML for safety
-        function escapeHtml(text) {
-            const map = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;',
-            };
-            return text.replace(/[&<>"']/g, m => map[m]);
-        }
+        retryButton.addEventListener('click', loadProblems);
+        statusFilter.addEventListener('change', loadProblems);
 
-        statusFilter.addEventListener('change', () => {
-            loadProblems();
-        });
+        // Initial load
+        loadProblems();
 
-        retryLoadBtn.addEventListener('click', () => {
-            loadProblems();
-        });
-
-        // Form submission
+        // Problem form submission
         const problemForm = document.getElementById('problemForm');
         const formMessage = document.getElementById('formMessage');
         const submitBtn = document.getElementById('submitBtn');
 
-        problemForm.addEventListener('submit', async e => {
+        function validateInput(input, errorId) {
+            const errorDiv = document.getElementById(errorId);
+            if (!input.value.trim()) {
+                errorDiv.style.display = 'block';
+                return false;
+            } else {
+                errorDiv.style.display = 'none';
+                return true;
+            }
+        }
+
+        problemForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            formMessage.textContent = '';
-            formMessage.className = '';
-            submitBtn.disabled = true;
 
-            // Simple client-side validation
-            const title = problemForm.title.value.trim();
-            const description = problemForm.description.value.trim();
-            const location = problemForm.location.value.trim();
-            const priority = problemForm.priority.value;
+            const titleInput = problemForm.title;
+            const descriptionInput = problemForm.description;
+            const locationInput = problemForm.location;
+            const priorityInput = problemForm.priority;
 
-            if (!title || !description || !location || !priority) {
-                formMessage.textContent = 'Please fill in all required fields.';
-                formMessage.className = 'message error';
-                submitBtn.disabled = false;
+            // Validate inputs
+            const validTitle = validateInput(titleInput, 'titleError');
+            const validDescription = validateInput(descriptionInput, 'descriptionError');
+            const validLocation = validateInput(locationInput, 'locationError');
+            const validPriority = validateInput(priorityInput, 'priorityError');
+
+            if (!(validTitle && validDescription && validLocation && validPriority)) {
+                formMessage.textContent = '';
                 return;
             }
 
-            const problemData = { title, description, location, priority };
+            // Prepare data
+            const data = {
+                title: titleInput.value.trim(),
+                description: descriptionInput.value.trim(),
+                location: locationInput.value.trim(),
+                priority: priorityInput.value,
+                status: "Pending" // default status
+            };
+
+            // Disable submit to prevent multiple submits
+            submitBtn.disabled = true;
+            formMessage.textContent = 'Submitting...';
 
             try {
-                const response = await fetch(${API_BASE}/problems, {
+                const response = await fetch(`${API_BASE}/problems`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(problemData),
+                    body: JSON.stringify(data)
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Failed to submit problem');
+                    throw new Error('Failed to submit problem');
                 }
 
-                const newProblem = await response.json();
+                formMessage.style.color = 'green';
                 formMessage.textContent = 'Problem submitted successfully!';
-                formMessage.className = 'message success';
+
                 problemForm.reset();
 
-                // Optionally reload the problems list to show the new entry
-                if (document.getElementById('home').classList.contains('active')) {
-                    loadProblems();
-                }
+                // Refresh problem list
+                loadProblems();
+
             } catch (error) {
-                formMessage.textContent = error.message;
-                formMessage.className = 'message error';
+                formMessage.style.color = '#721c24';
+                formMessage.textContent = 'Failed to submit problem. Please try again.';
             } finally {
                 submitBtn.disabled = false;
             }
         });
-
-        // Initialize
-        loadProblems();
     </script>
 </body>
 </html>
