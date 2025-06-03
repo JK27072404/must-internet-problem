@@ -1,94 +1,631 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MUST Internet Problem Solver</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background: linear-gradient(to right, #eef2f3, #8e9eab);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MUST Internet Problem Solver</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .container {
-      max-width: 700px;
-      margin: 50px auto;
-      background: #fff;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
 
-    h2 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-    .btn-primary {
-      width: 100%;
-      border-radius: 30px;
-    }
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
 
-    #solution-box {
-      margin-top: 20px;
-      display: none;
-    }
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
 
-    .card {
-      border-radius: 15px;
-    }
-  </style>
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Mobile menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #333;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 2rem 0;
+            min-height: calc(100vh - 80px);
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .hero {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+        }
+
+        /* Problem Grid */
+        .problems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .problem-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .problem-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .problem-status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-in-progress {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-resolved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .problem-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .problem-description {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .problem-meta {
+            font-size: 0.875rem;
+            color: #888;
+        }
+
+        /* Loading and Messages */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: inherit;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                flex-direction: column;
+                background-color: rgba(255, 255, 255, 0.95);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                backdrop-filter: blur(10px);
+                padding: 1rem 0;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .problems-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-container {
+                padding: 1rem;
+            }
+        }
+    </style>
 </head>
-
 <body>
-  <div class="container">
-    <h2>MUST Internet Problem Solver</h2>
-    <form id="problemForm">
-      <div class="mb-3">
-        <label for="problem" class="form-label">Describe your internet problem:</label>
-        <input type="text" class="form-control" id="problem" name="problem" required />
-      </div>
-      <button type="submit" class="btn btn-primary">Find Solution</button>
-    </form>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo">MUST Problem Solver</div>
+            <ul class="nav-menu" role="navigation">
+                <li><a href="#" class="nav-link active" data-section="home" aria-current="page">Home</a></li>
+                <li><a href="#" class="nav-link" data-section="problem">Report Problem</a></li>
+                <li><a href="#" class="nav-link" data-section="about">About</a></li>
+            </ul>
+            <div class="hamburger" role="button" aria-label="Toggle navigation menu" tabindex="0">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
 
-    <div id="solution-box" class="card mt-4">
-      <div class="card-body">
-        <h5 class="card-title">Suggested Solution</h5>
-        <p id="solutionText" class="card-text"></p>
-      </div>
+    <div class="container">
+        <div class="main-content">
+            <!-- Home Section -->
+            <section id="home" class="section active" tabindex="-1">
+                <div class="hero">
+                    <h1>Internet Problem Solver</h1>
+                    <p>Report and track internet connectivity issues at MUST</p>
+                </div>
+
+                <div class="card">
+                    <h2>Recent Problems</h2>
+                    <div class="form-group">
+                        <label for="statusFilter">Filter by Status</label>
+                        <select id="statusFilter" class="form-control" aria-label="Filter problems by status">
+                            <option value="">All</option>
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Resolved">Resolved</option>
+                        </select>
+                    </div>
+                    <div id="problemsList" class="problems-grid" aria-live="polite" aria-busy="false"></div>
+                    <div id="loadingMessage" class="loading" hidden>Loading problems...</div>
+                    <div id="errorMessage" class="message error" hidden>
+                        Failed to load problems. <button id="retryLoad">Retry</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Report Problem Section -->
+            <section id="problem" class="section" tabindex="-1">
+                <div class="card">
+                    <h2>Report a Problem</h2>
+                    <form id="problemForm" novalidate aria-describedby="formMessage" aria-live="assertive">
+                        <div class="form-group">
+                            <label for="title">Problem Title</label>
+                            <input type="text" id="title" name="title" class="form-control" required aria-required="true" />
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Problem Description</label>
+                            <textarea id="description" name="description" class="form-control" required aria-required="true"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" name="location" class="form-control" required aria-required="true" />
+                        </div>
+                        <div class="form-group">
+                            <label for="priority">Priority</label>
+                            <select id="priority" name="priority" class="form-control" required aria-required="true">
+                                <option value="">Select priority</option>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Submit</button>
+                        <div id="formMessage" role="alert" style="margin-top: 1rem;"></div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- About Section -->
+            <section id="about" class="section" tabindex="-1">
+                <div class="card">
+                    <h2>About This Application</h2>
+                    <p>This is an interactive tool developed for MUST students and staff to report and track internet connectivity issues on campus.</p>
+                    <p>Developed with modern web technologies for ease of use and responsiveness.</p>
+                </div>
+            </section>
+        </div>
     </div>
-  </div>
 
-  <script>
-    document.getElementById('problemForm').addEventListener('submit', function (e) {
-      e.preventDefault();
+    <script>
+        const API_BASE = 'http://localhost:3000/api/v1'; // Update as needed
 
-      const problem = document.getElementById('problem').value.trim().toLowerCase();
-      const solutionText = document.getElementById('solutionText');
-      const solutionBox = document.getElementById('solution-box');
+        // Navigation and section toggle
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('.section');
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
 
-      let solution = 'Sorry, we could not find a solution. Please contact ICT support.';
+        function setActiveSection(sectionId) {
+            sections.forEach(sec => {
+                if (sec.id === sectionId) {
+                    sec.classList.add('active');
+                    sec.setAttribute('tabindex', '-1');
+                    sec.focus();
+                } else {
+                    sec.classList.remove('active');
+                    sec.removeAttribute('tabindex');
+                }
+            });
 
-      if (problem.includes('wifi') && problem.includes('not working')) {
-        solution = 'Try restarting your router. Ensure you are within range. Check if the WiFi is enabled on your device.';
-      } else if (problem.includes('slow')) {
-        solution = 'Reduce the number of connected devices. Check for background downloads. Restart your modem.';
-      } else if (problem.includes('no internet')) {
-        solution = 'Ensure cables are properly connected. Restart the modem and router. Contact your ISP if it persists.';
-      } else if (problem.includes('cannot connect')) {
-        solution = 'Ensure the network password is correct. Restart your device. Forget and reconnect to the network.';
-      } else if (problem.includes('signal') && problem.includes('weak')) {
-        solution = 'Move closer to the access point. Reduce physical obstructions. Consider a signal booster.';
-      } else if (problem.includes('page not loading')) {
-        solution = 'Check if other websites load. Clear your browser cache. Try a different browser or device.';
-      }
+            navLinks.forEach(link => {
+                if (link.dataset.section === sectionId) {
+                    link.classList.add('active');
+                    link.setAttribute('aria-current', 'page');
+                } else {
+                    link.classList.remove('active');
+                    link.removeAttribute('aria-current');
+                }
+            });
 
-      solutionText.textContent = solution;
-      solutionBox.style.display = 'block';
-    });
-  </script>
+            if (navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+            }
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const section = link.dataset.section;
+                setActiveSection(section);
+            });
+        });
+
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+
+        hamburger.addEventListener('keydown', e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                navMenu.classList.toggle('active');
+            }
+        });
+
+        // Load problems from backend
+        const problemsList = document.getElementById('problemsList');
+        const statusFilter = document.getElementById('statusFilter');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const retryLoadBtn = document.getElementById('retryLoad');
+
+        async function loadProblems() {
+            problemsList.innerHTML = '';
+            errorMessage.hidden = true;
+            loadingMessage.hidden = false;
+            problemsList.setAttribute('aria-busy', 'true');
+            statusFilter.disabled = true;
+            try {
+                const response = await fetch(${API_BASE}/problems);
+                if (!response.ok) throw new Error('Failed to fetch problems');
+                let problems = await response.json();
+
+                const status = statusFilter.value;
+                if (status) {
+                    problems = problems.filter(p => p.status === status);
+                }
+
+                if (problems.length === 0) {
+                    problemsList.innerHTML = '<p>No problems found.</p>';
+                } else {
+                    problemsList.innerHTML = problems.map(problem => {
+                        const statusClass = 
+                            problem.status === 'Pending' ? 'status-pending' :
+                            problem.status === 'In Progress' ? 'status-in-progress' :
+                            problem.status === 'Resolved' ? 'status-resolved' : '';
+
+                        const createdDate = new Date(problem.created_at).toLocaleDateString();
+
+                        return 
+                            <div class="problem-card" role="article" aria-label="Problem titled ${problem.title}">
+                                <div class="problem-status ${statusClass}">${problem.status}</div>
+                                <div class="problem-title">${escapeHtml(problem.title)}</div>
+                                <div class="problem-description">${escapeHtml(problem.description)}</div>
+                                <div class="problem-meta">
+                                    Location: ${escapeHtml(problem.location)} | Priority: ${escapeHtml(problem.priority)} | Reported: ${createdDate}
+                                </div>
+                            </div>
+                        ;
+                    }).join('');
+                }
+            } catch (error) {
+                errorMessage.hidden = false;
+                problemsList.innerHTML = '';
+            } finally {
+                loadingMessage.hidden = true;
+                problemsList.setAttribute('aria-busy', 'false');
+                statusFilter.disabled = false;
+            }
+        }
+
+        // Escape HTML for safety
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;',
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        statusFilter.addEventListener('change', () => {
+            loadProblems();
+        });
+
+        retryLoadBtn.addEventListener('click', () => {
+            loadProblems();
+        });
+
+        // Form submission
+        const problemForm = document.getElementById('problemForm');
+        const formMessage = document.getElementById('formMessage');
+        const submitBtn = document.getElementById('submitBtn');
+
+        problemForm.addEventListener('submit', async e => {
+            e.preventDefault();
+            formMessage.textContent = '';
+            formMessage.className = '';
+            submitBtn.disabled = true;
+
+            // Simple client-side validation
+            const title = problemForm.title.value.trim();
+            const description = problemForm.description.value.trim();
+            const location = problemForm.location.value.trim();
+            const priority = problemForm.priority.value;
+
+            if (!title || !description || !location || !priority) {
+                formMessage.textContent = 'Please fill in all required fields.';
+                formMessage.className = 'message error';
+                submitBtn.disabled = false;
+                return;
+            }
+
+            const problemData = { title, description, location, priority };
+
+            try {
+                const response = await fetch(${API_BASE}/problems, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(problemData),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to submit problem');
+                }
+
+                const newProblem = await response.json();
+                formMessage.textContent = 'Problem submitted successfully!';
+                formMessage.className = 'message success';
+                problemForm.reset();
+
+                // Optionally reload the problems list to show the new entry
+                if (document.getElementById('home').classList.contains('active')) {
+                    loadProblems();
+                }
+            } catch (error) {
+                formMessage.textContent = error.message;
+                formMessage.className = 'message error';
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Initialize
+        loadProblems();
+    </script>
 </body>
-
 </html>
