@@ -29,7 +29,6 @@ exports.getProblemById = async (req, res) => {
 exports.createProblem = async (req, res) => {
     const { title, description, location, priority, status = 'Pending' } = req.body;
     
-    // Validate input
     if (!title || !description || !location || !priority) {
         return res.status(400).json({ error: 'All fields are required' });
     }
@@ -50,19 +49,11 @@ exports.createProblem = async (req, res) => {
             'INSERT INTO problems (title, description, location, priority, status) VALUES (?, ?, ?, ?, ?)',
             [title, description, location, priority, status]
         );
-        
-        const newProblem = {
-            id: result.insertId,
-            title,
-            description,
-            location,
-            priority,
-            status,
-            created_at: new Date(),
-            updated_at: new Date()
-        };
-        
-        res.status(201).json(newProblem);
+
+        // Optional: fetch the newly created problem from DB to get accurate timestamps
+        const [rows] = await pool.query('SELECT * FROM problems WHERE id = ?', [result.insertId]);
+
+        res.status(201).json(rows[0]);
     } catch (error) {
         console.error('Error creating problem:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -88,7 +79,10 @@ exports.updateProblemStatus = async (req, res) => {
             return res.status(404).json({ error: 'Problem not found' });
         }
 
-        res.json({ message: 'Problem status updated successfully' });
+        // Return updated problem data after update
+        const [rows] = await pool.query('SELECT * FROM problems WHERE id = ?', [req.params.id]);
+
+        res.json(rows[0]);
     } catch (error) {
         console.error('Error updating problem status:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -99,6 +93,9 @@ exports.updateProblemStatus = async (req, res) => {
 exports.getProblemStats = async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM problem_stats');
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'No statistics found' });
+        }
         res.json(rows[0]);
     } catch (error) {
         console.error('Error fetching problem stats:', error);
